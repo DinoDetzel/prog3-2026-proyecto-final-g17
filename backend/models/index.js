@@ -20,10 +20,40 @@ const sequelize = new Sequelize(
 );
 
 const UserModel = require('./User');
+const CategoriaModel = require('./Categoria');
+const ProductoModel = require('./Producto');
+const MovimientoInventarioModel = require('./MovimientoInventario');
+
 const User = UserModel(sequelize);
+const Categoria = CategoriaModel(sequelize);
+const Producto = ProductoModel(sequelize);
+const MovimientoInventario = MovimientoInventarioModel(sequelize);
+
+Categoria.hasMany(Producto, {
+  foreignKey: 'categoriaId',
+  as: 'productos'
+});
+
+Producto.belongsTo(Categoria, {
+  foreignKey: 'categoriaId',
+  as: 'categoria'
+});
+
+Producto.hasMany(MovimientoInventario, {
+  foreignKey: 'productoId',
+  as: 'movimientos'
+});
+
+MovimientoInventario.belongsTo(Producto, {
+  foreignKey: 'productoId',
+  as: 'producto'
+});
 
 module.exports = {
   sequelize,
   Sequelize,
-  User
+  User,
+  Categoria,
+  Producto,
+  MovimientoInventario
 };
