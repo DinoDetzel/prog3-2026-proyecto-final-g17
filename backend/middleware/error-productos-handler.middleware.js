@@ -6,18 +6,18 @@ function errorProductosHandler(err, req, res, next) {
   console.error(`[PRODUCTOS ERROR] ${err.message}`);
 
   // Nombre de producto duplicado
-  if (err.name === 'SequelizeUniqueConstraintError') {
+  if (err.name === "SequelizeUniqueConstraintError") {
     return res.status(400).json({
       error: true,
-      message: 'Ya existe un producto con ese nombre'
+      message: "Ya existe un producto con ese nombre",
     });
   }
 
   // Validaciones de Sequelize
-  if (err.name === 'SequelizeValidationError') {
+  if (err.name === "SequelizeValidationError") {
     return res.status(400).json({
       error: true,
-      message: err.errors.map(e => e.message).join(', ')
+      message: err.errors.map((e) => e.message).join(", "),
     });
   }
 
@@ -25,7 +25,7 @@ function errorProductosHandler(err, req, res, next) {
   if (err.status === 404) {
     return res.status(404).json({
       error: true,
-      message: err.message || 'Producto no encontrado'
+      message: err.message || "Producto no encontrado",
     });
   }
 
@@ -33,7 +33,7 @@ function errorProductosHandler(err, req, res, next) {
   if (err.status === 422) {
     return res.status(422).json({
       error: true,
-      message: err.message || 'Stock insuficiente para realizar la operación'
+      message: err.message || "Stock insuficiente para realizar la operación",
     });
   }
 
