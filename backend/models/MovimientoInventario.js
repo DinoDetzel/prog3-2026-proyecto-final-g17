@@ -1,48 +1,53 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes } = require("sequelize");
 
 module.exports = (sequelize) => {
-  const MovimientoInventario = sequelize.define('MovimientoInventario', {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
+  const MovimientoInventario = sequelize.define(
+    "MovimientoInventario",
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      productoId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        field: "producto_id",
+        references: {
+          model: "productos",
+          key: "id",
+        },
+      },
+      tipoMovimiento: {
+        type: DataTypes.ENUM("ENTRADA", "SALIDA"),
+        allowNull: false,
+      },
+      cantidad: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: {
+          min: 1,
+        },
+      },
+      motivo: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+          len: [2, 255],
+        },
+      },
+      fecha: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW,
+      },
     },
-    productoId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'productos',
-        key: 'id'
-      }
+    {
+      tableName: "movimientos",
+      timestamps: true,
     },
-    tipoMovimiento: {
-      type: DataTypes.ENUM('ENTRADA', 'SALIDA'),
-      allowNull: false
-    },
-    cantidad: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      validate: {
-        min: 1
-      }
-    },
-    motivo: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true,
-        len: [2, 255]
-      }
-    },
-    fecha: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW
-    }
-  }, {
-    tableName: 'movimientos_inventario',
-    timestamps: true
-  });
+  );
 
   return MovimientoInventario;
 };
