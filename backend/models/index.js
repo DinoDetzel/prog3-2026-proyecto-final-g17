@@ -61,6 +61,22 @@ MovimientoInventario.belongsTo(Producto, {
   as: "producto",
 });
 
+User.hasMany(MovimientoInventario, {
+  foreignKey: {
+    name: "usuarioId",
+    field: "usuario_id",
+  },
+  as: "movimientos",
+});
+
+MovimientoInventario.belongsTo(User, {
+  foreignKey: {
+    name: "usuarioId",
+    field: "usuario_id",
+  },
+  as: "usuario",
+});
+
 module.exports = {
   sequelize,
   Sequelize,

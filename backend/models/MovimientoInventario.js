@@ -18,9 +18,21 @@ module.exports = (sequelize) => {
           key: "id",
         },
       },
-      tipoMovimiento: {
-        type: DataTypes.ENUM("ENTRADA", "SALIDA"),
+      usuarioId: {
+        type: DataTypes.INTEGER,
         allowNull: false,
+        field: "usuario_id",
+        references: {
+          model: "users",
+          key: "id",
+        },
+      },
+      tipo: {
+        type: DataTypes.STRING(20),
+        allowNull: false,
+        validate: {
+          isIn: [["ENTRADA", "SALIDA"]],
+        },
       },
       cantidad: {
         type: DataTypes.INTEGER,
@@ -29,18 +41,9 @@ module.exports = (sequelize) => {
           min: 1,
         },
       },
-      motivo: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-          len: [2, 255],
-        },
-      },
-      fecha: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW,
+      notas: {
+        type: DataTypes.TEXT,
+        allowNull: true,
       },
     },
     {

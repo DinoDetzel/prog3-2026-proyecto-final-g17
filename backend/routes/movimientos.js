@@ -1,17 +1,18 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 const {
   listarMovimientos,
   obtenerMovimiento,
   crearMovimiento,
   actualizarMovimiento,
-  eliminarMovimiento
-} = require('../controllers/movimientoController');
+  eliminarMovimiento,
+} = require("../controllers/movimientoController");
+const { verificarToken } = require("../middleware/auth");
 
-router.get('/', listarMovimientos);
-router.get('/:id', obtenerMovimiento);
-router.post('/', crearMovimiento);
-router.put('/:id', actualizarMovimiento);
-router.delete('/:id', eliminarMovimiento);
+router.get("/", verificarToken, listarMovimientos);
+router.get("/:id", verificarToken, obtenerMovimiento);
+router.post("/", verificarToken, crearMovimiento);
+router.put("/:id", verificarToken, actualizarMovimiento);
+router.delete("/:id", verificarToken, eliminarMovimiento);
 
 module.exports = router;
