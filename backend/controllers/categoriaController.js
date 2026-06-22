@@ -1,6 +1,6 @@
 const { Categoria, Producto } = require("../models");
 
-const listarCategorias = async (req, res) => {
+const listarCategorias = async (req, res, next) => {
   try {
     // Busca las categorías con sus productos
     const categorias = await Categoria.findAll({
@@ -11,11 +11,11 @@ const listarCategorias = async (req, res) => {
     res.json(categorias);
   } catch (error) {
     console.error("Error al listar categorías:", error);
-    res.status(500).json({ error: "Error al obtener las categorías" });
+    next(error);
   }
 };
 
-const obtenerCategoria = async (req, res) => {
+const obtenerCategoria = async (req, res, next) => {
   try {
     const { id } = req.params;
     // Busca la categoría con sus productos
@@ -24,22 +24,26 @@ const obtenerCategoria = async (req, res) => {
     });
 
     if (!categoria) {
-      return res.status(404).json({ error: "Categoría no encontrada" });
+      const err = new Error("Categoría no encontrada");
+      err.status = 404;
+      return next(err);
     }
 
     res.json(categoria);
   } catch (error) {
     console.error("Error al obtener categoría:", error);
-    res.status(500).json({ error: "Error al obtener la categoría" });
+    next(error);
   }
 };
 
-const crearCategoria = async (req, res) => {
+const crearCategoria = async (req, res, next) => {
   try {
     const { nombre, descripcion } = req.body;
     // Validacion del nombre
     if (!nombre || String(nombre).trim() === "") {
-      return res.status(400).json({ error: "El nombre es obligatorio" });
+      const err = new Error("El nombre es obligatorio");
+      err.status = 400;
+      return next(err);
     }
     // Crea la categoría
     const categoria = await Categoria.create({ nombre, descripcion });
@@ -49,27 +53,26 @@ const crearCategoria = async (req, res) => {
       .json({ message: "Categoría creada exitosamente", categoria });
   } catch (error) {
     console.error("Error al crear categoría:", error);
-    if (error.name === "SequelizeUniqueConstraintError") {
-      return res
-        .status(400)
-        .json({ error: "Ya existe una categoría con ese nombre" });
-    }
-    res.status(500).json({ error: "Error al crear la categoría" });
+    next(error);
   }
 };
 
-const actualizarCategoria = async (req, res) => {
+const actualizarCategoria = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { nombre, descripcion } = req.body;
     // Busca la categoría
     const categoria = await Categoria.findByPk(id);
     if (!categoria) {
-      return res.status(404).json({ error: "Categoría no encontrada" });
+      const err = new Error("Categoría no encontrada");
+      err.status = 404;
+      return next(err);
     }
     // Validacion del nombre
     if (!nombre || String(nombre).trim() === "") {
-      return res.status(400).json({ error: "El nombre es obligatorio" });
+      const err = new Error("El nombre es obligatorio");
+      err.status = 400;
+      return next(err);
     }
 
     categoria.nombre = nombre;
@@ -80,29 +83,37 @@ const actualizarCategoria = async (req, res) => {
     res.json({ message: "Categoría actualizada exitosamente", categoria });
   } catch (error) {
     console.error("Error al actualizar categoría:", error);
-    if (error.name === "SequelizeUniqueConstraintError") {
-      return res
-        .status(400)
-        .json({ error: "Ya existe una categoría con ese nombre" });
-    }
-    res.status(500).json({ error: "Error al actualizar la categoría" });
+    next(error);
   }
 };
 
-const eliminarCategoria = async (req, res) => {
+const eliminarCategoria = async (req, res, next) => {
   try {
     const { id } = req.params;
     const categoria = await Categoria.findByPk(id);
 
     if (!categoria) {
-      return res.status(404).json({ error: "Categoría no encontrada" });
+      const err = new Error("Categoría no encontrada");
+      err.status = 404;
+      return next(err);
+    }
+
+    // Prevent deletion if category has associated products
+    const productos =
+      (await categoria.getProductos) && (await categoria.getProductos());
+    if (productos && productos.length > 0) {
+      const err = new Error(
+        "No se puede eliminar la categoría porque tiene productos asociados",
+      );
+      err.status = 409;
+      return next(err);
     }
 
     await categoria.destroy();
     res.json({ message: "Categoría eliminada exitosamente" });
   } catch (error) {
     console.error("Error al eliminar categoría:", error);
-    res.status(500).json({ error: "Error al eliminar la categoría" });
+    next(error);
   }
 };
 
