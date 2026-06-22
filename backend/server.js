@@ -7,6 +7,8 @@ require('dotenv').config();
 const { sequelize } = require('./models');
 const routes = require('./routes');
 
+const { errorHandler, notFoundHandler } = require('./middleware');
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -40,19 +42,11 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Manejo de errores
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({
-    error: 'Something went wrong!',
-    message: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
-  });
-});
-
 // Manejo de rutas no encontradas
-app.use('*', (req, res) => {
-  res.status(404).json({ error: 'Route not found' });
-});
+app.use('*', notFoundHandler);
+
+// Manejo de errores
+app.use(errorHandler);
 
 // Inicializar servidor
 async function startServer() {
