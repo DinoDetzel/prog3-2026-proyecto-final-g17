@@ -1,17 +1,18 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 const {
   listarCategorias,
   obtenerCategoria,
   crearCategoria,
   actualizarCategoria,
-  eliminarCategoria
-} = require('../controllers/categoriaController');
+  eliminarCategoria,
+} = require("../controllers/categoriaController");
+const { verificarToken } = require("../middleware/auth");
 
-router.get('/', listarCategorias);
-router.get('/:id', obtenerCategoria);
-router.post('/', crearCategoria);
-router.put('/:id', actualizarCategoria);
-router.delete('/:id', eliminarCategoria);
+router.get("/", verificarToken, listarCategorias);
+router.get("/:id", verificarToken, obtenerCategoria);
+router.post("/", verificarToken, crearCategoria);
+router.put("/:id", verificarToken, actualizarCategoria);
+router.delete("/:id", verificarToken, eliminarCategoria);
 
 module.exports = router;
