@@ -1,0 +1,349 @@
+{
+  "info": {
+    "name": "Backend API",
+    "description": "Colección de Postman para el backend del proyecto. Usa {{base_url}} y {{token}} según el entorno.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        }
+      }
+    },
+    {
+      "name": "API Test",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/test",
+          "host": ["{{base_url}}"],
+          "path": ["test"]
+        }
+      }
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Usuario Ejemplo\",\n  \"email\": \"usuario@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"usuario@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Perfil",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/perfil",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "perfil"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categorias",
+      "item": [
+        {
+          "name": "Listar categorías",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/categorias",
+              "host": ["{{base_url}}"],
+              "path": ["categorias"]
+            }
+          }
+        },
+        {
+          "name": "Obtener categoría",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/categorias/{{categoriaId}}",
+              "host": ["{{base_url}}"],
+              "path": ["categorias", "{{categoriaId}}"]
+            }
+          }
+        },
+        {
+          "name": "Crear categoría",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Categoría de ejemplo\",\n  \"descripcion\": \"Descripción de la categoría\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/categorias",
+              "host": ["{{base_url}}"],
+              "path": ["categorias"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar categoría",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Categoría actualizada\",\n  \"descripcion\": \"Descripción actualizada\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/categorias/{{categoriaId}}",
+              "host": ["{{base_url}}"],
+              "path": ["categorias", "{{categoriaId}}"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar categoría",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/categorias/{{categoriaId}}",
+              "host": ["{{base_url}}"],
+              "path": ["categorias", "{{categoriaId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Productos",
+      "item": [
+        {
+          "name": "Listar productos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/productos",
+              "host": ["{{base_url}}"],
+              "path": ["productos"]
+            }
+          }
+        },
+        {
+          "name": "Listar por categoría",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/productos?categoriaId={{categoriaId}}",
+              "host": ["{{base_url}}"],
+              "path": ["productos"],
+              "query": [
+                { "key": "categoriaId", "value": "{{categoriaId}}" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Buscar productos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/productos?search={{search}}",
+              "host": ["{{base_url}}"],
+              "path": ["productos"],
+              "query": [
+                { "key": "search", "value": "{{search}}" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Obtener producto",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/productos/{{productoId}}",
+              "host": ["{{base_url}}"],
+              "path": ["productos", "{{productoId}}"]
+            }
+          }
+        },
+        {
+          "name": "Crear producto",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Producto ejemplo\",\n  \"descripcion\": \"Descripción del producto\",\n  \"precio\": 100.0,\n  \"stock\": 10,\n  \"stockMinimo\": 2,\n  \"categoriaId\": {{categoriaId}},\n  \"activo\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/productos",
+              "host": ["{{base_url}}"],
+              "path": ["productos"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar producto",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Producto actualizado\",\n  \"descripcion\": \"Descripción actualizada\",\n  \"precio\": 120.0,\n  \"stock\": 15,\n  \"stockMinimo\": 3,\n  \"categoriaId\": {{categoriaId}},\n  \"activo\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/productos/{{productoId}}",
+              "host": ["{{base_url}}"],
+              "path": ["productos", "{{productoId}}"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar producto",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/productos/{{productoId}}",
+              "host": ["{{base_url}}"],
+              "path": ["productos", "{{productoId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Movimientos",
+      "item": [
+        {
+          "name": "Listar movimientos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/movimientos",
+              "host": ["{{base_url}}"],
+              "path": ["movimientos"]
+            }
+          }
+        },
+        {
+          "name": "Obtener movimiento",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/movimientos/{{movimientoId}}",
+              "host": ["{{base_url}}"],
+              "path": ["movimientos", "{{movimientoId}}"]
+            }
+          }
+        },
+        {
+          "name": "Crear movimiento",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productoId\": {{productoId}},\n  \"tipoMovimiento\": \"ENTRADA\",\n  \"cantidad\": 10,\n  \"motivo\": \"Ingreso inicial\",\n  \"fecha\": \"2026-06-21T12:00:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/movimientos",
+              "host": ["{{base_url}}"],
+              "path": ["movimientos"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar movimiento",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipoMovimiento\": \"SALIDA\",\n  \"cantidad\": 5,\n  \"motivo\": \"Venta\",\n  \"fecha\": \"2026-06-22T12:00:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/movimientos/{{movimientoId}}",
+              "host": ["{{base_url}}"],
+              "path": ["movimientos", "{{movimientoId}}"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar movimiento",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/movimientos/{{movimientoId}}",
+              "host": ["{{base_url}}"],
+              "path": ["movimientos", "{{movimientoId}}"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
