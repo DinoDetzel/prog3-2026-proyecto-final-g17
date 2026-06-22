@@ -5,7 +5,7 @@ const {
   User,
 } = require("../models");
 
-const listarMovimientos = async (req, res) => {
+const listarMovimientos = async (req, res, next) => {
   try {
     const movimientos = await MovimientoInventario.findAll({
       include: [
@@ -17,11 +17,11 @@ const listarMovimientos = async (req, res) => {
     res.json(movimientos);
   } catch (error) {
     console.error("Error al listar movimientos:", error);
-    res.status(500).json({ error: "Error al obtener los movimientos" });
+    next(error);
   }
 };
 
-const obtenerMovimiento = async (req, res) => {
+const obtenerMovimiento = async (req, res, next) => {
   try {
     const { id } = req.params;
     const movimiento = await MovimientoInventario.findByPk(id, {
@@ -32,17 +32,19 @@ const obtenerMovimiento = async (req, res) => {
     });
 
     if (!movimiento) {
-      return res.status(404).json({ error: "Movimiento no encontrado" });
+      const error = new Error("Movimiento no encontrado");
+      error.status = 404;
+      return next(error);
     }
 
     res.json(movimiento);
   } catch (error) {
     console.error("Error al obtener movimiento:", error);
-    res.status(500).json({ error: "Error al obtener el movimiento" });
+    next(error);
   }
 };
 
-const crearMovimiento = async (req, res) => {
+const crearMovimiento = async (req, res, next) => {
   const transaction = await sequelize.transaction();
 
   try {
@@ -53,26 +55,23 @@ const crearMovimiento = async (req, res) => {
 
     if (!productoId || !movimientoTipo || !cantidad) {
       await transaction.rollback();
-
-      return res.status(400).json({
-        error: "productoId, tipo y cantidad son obligatorios",
-      });
+      const error = new Error("productoId, tipo y cantidad son obligatorios");
+      error.status = 400;
+      return next(error);
     }
 
     if (!["ENTRADA", "SALIDA"].includes(movimientoTipo)) {
       await transaction.rollback();
-
-      return res.status(400).json({
-        error: "tipo debe ser ENTRADA o SALIDA",
-      });
+      const error = new Error("tipo debe ser ENTRADA o SALIDA");
+      error.status = 400;
+      return next(error);
     }
 
     if (cantidad <= 0) {
       await transaction.rollback();
-
-      return res.status(400).json({
-        error: "La cantidad debe ser mayor a cero",
-      });
+      const error = new Error("La cantidad debe ser mayor a cero");
+      error.status = 400;
+      return next(error);
     }
 
     const producto = await Producto.findByPk(productoId, {
@@ -81,18 +80,16 @@ const crearMovimiento = async (req, res) => {
 
     if (!producto) {
       await transaction.rollback();
-
-      return res.status(404).json({
-        error: "Producto no encontrado",
-      });
+      const error = new Error("Producto no encontrado");
+      error.status = 404;
+      return next(error);
     }
 
-    if (tipo === "SALIDA" && producto.stock < cantidad) {
+    if (movimientoTipo === "SALIDA" && producto.stock < cantidad) {
       await transaction.rollback();
-
-      return res.status(400).json({
-        error: "Stock insuficiente para el movimiento",
-      });
+      const error = new Error("Stock insuficiente para el movimiento");
+      error.status = 422;
+      return next(error);
     }
 
     const movimiento = await MovimientoInventario.create(
@@ -109,7 +106,7 @@ const crearMovimiento = async (req, res) => {
     );
 
     producto.stock =
-      tipo === "ENTRADA"
+      movimientoTipo === "ENTRADA"
         ? producto.stock + cantidad
         : producto.stock - cantidad;
 
@@ -124,13 +121,11 @@ const crearMovimiento = async (req, res) => {
     await transaction.rollback();
 
     console.error("Error al crear movimiento:", error);
-    res.status(500).json({
-      error: "Error al crear el movimiento",
-    });
+    next(error);
   }
 };
 
-const actualizarMovimiento = async (req, res) => {
+const actualizarMovimiento = async (req, res, next) => {
   const transaction = await sequelize.transaction();
 
   try {
@@ -145,34 +140,30 @@ const actualizarMovimiento = async (req, res) => {
 
     if (!movimiento) {
       await transaction.rollback();
-
-      return res.status(404).json({
-        error: "Movimiento no encontrado",
-      });
+      const error = new Error("Movimiento no encontrado");
+      error.status = 404;
+      return next(error);
     }
 
     if (!movimientoTipo || !cantidad) {
       await transaction.rollback();
-
-      return res.status(400).json({
-        error: "tipo y cantidad son obligatorios",
-      });
+      const error = new Error("tipo y cantidad son obligatorios");
+      error.status = 400;
+      return next(error);
     }
 
     if (!["ENTRADA", "SALIDA"].includes(movimientoTipo)) {
       await transaction.rollback();
-
-      return res.status(400).json({
-        error: "tipo debe ser ENTRADA o SALIDA",
-      });
+      const error = new Error("tipo debe ser ENTRADA o SALIDA");
+      error.status = 400;
+      return next(error);
     }
 
     if (cantidad <= 0) {
       await transaction.rollback();
-
-      return res.status(400).json({
-        error: "La cantidad debe ser mayor a cero",
-      });
+      const error = new Error("La cantidad debe ser mayor a cero");
+      error.status = 400;
+      return next(error);
     }
 
     const producto = await Producto.findByPk(movimiento.productoId, {
@@ -181,10 +172,9 @@ const actualizarMovimiento = async (req, res) => {
 
     if (!producto) {
       await transaction.rollback();
-
-      return res.status(404).json({
-        error: "Producto asociado no encontrado",
-      });
+      const error = new Error("Producto asociado no encontrado");
+      error.status = 404;
+      return next(error);
     }
 
     const ajusteAnterior =
@@ -196,10 +186,9 @@ const actualizarMovimiento = async (req, res) => {
 
     if (producto.stock + diferenciaStock < 0) {
       await transaction.rollback();
-
-      return res.status(400).json({
-        error: "La actualización generaría stock negativo",
-      });
+      const error = new Error("La actualización generaría stock negativo");
+      error.status = 422;
+      return next(error);
     }
 
     producto.stock += diferenciaStock;
@@ -220,13 +209,11 @@ const actualizarMovimiento = async (req, res) => {
     await transaction.rollback();
 
     console.error("Error al actualizar movimiento:", error);
-    res.status(500).json({
-      error: "Error al actualizar el movimiento",
-    });
+    next(error);
   }
 };
 
-const eliminarMovimiento = async (req, res) => {
+const eliminarMovimiento = async (req, res, next) => {
   const t = await sequelize.transaction();
 
   try {
@@ -237,7 +224,9 @@ const eliminarMovimiento = async (req, res) => {
 
     if (!movimiento) {
       await t.rollback();
-      return res.status(404).json({ error: "Movimiento no encontrado" });
+      const error = new Error("Movimiento no encontrado");
+      error.status = 404;
+      return next(error);
     }
 
     const producto = await Producto.findByPk(movimiento.productoId, {
@@ -246,7 +235,9 @@ const eliminarMovimiento = async (req, res) => {
 
     if (!producto) {
       await t.rollback();
-      return res.status(404).json({ error: "Producto asociado no encontrado" });
+      const error = new Error("Producto asociado no encontrado");
+      error.status = 404;
+      return next(error);
     }
 
     const revertirMovimiento =
@@ -256,9 +247,11 @@ const eliminarMovimiento = async (req, res) => {
 
     if (producto.stock + revertirMovimiento < 0) {
       await t.rollback();
-      return res.status(400).json({
-        error: "No se puede eliminar porque generaría stock negativo",
-      });
+      const error = new Error(
+        "No se puede eliminar porque generaría stock negativo",
+      );
+      error.status = 422;
+      return next(error);
     }
 
     producto.stock += revertirMovimiento;
@@ -272,7 +265,7 @@ const eliminarMovimiento = async (req, res) => {
     await t.rollback();
 
     console.error("Error al eliminar movimiento:", error);
-    res.status(500).json({ error: "Error al eliminar el movimiento" });
+    next(error);
   }
 };
 

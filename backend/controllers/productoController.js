@@ -6,7 +6,7 @@ const {
 } = require("../models");
 const { Op } = require("sequelize");
 
-const listarProductos = async (req, res) => {
+const listarProductos = async (req, res, next) => {
   try {
     const { categoriaId, search } = req.query;
     const where = {};
@@ -32,11 +32,11 @@ const listarProductos = async (req, res) => {
     res.json(productos);
   } catch (error) {
     console.error("Error al listar productos:", error);
-    res.status(500).json({ error: "Error al obtener los productos" });
+    next(error);
   }
 };
 
-const obtenerProducto = async (req, res) => {
+const obtenerProducto = async (req, res, next) => {
   try {
     // Obtiene el id del producto
     const { id } = req.params;
@@ -49,17 +49,19 @@ const obtenerProducto = async (req, res) => {
     });
     // Verifica si el producto existe
     if (!producto) {
-      return res.status(404).json({ error: "Producto no encontrado" });
+      const error = new Error("Producto no encontrado");
+      error.status = 404;
+      return next(error);
     }
     // Devuelve el producto
     res.json(producto);
   } catch (error) {
     console.error("Error al obtener producto:", error);
-    res.status(500).json({ error: "Error al obtener el producto" });
+    next(error);
   }
 };
 
-const crearProducto = async (req, res) => {
+const crearProducto = async (req, res, next) => {
   try {
     const {
       nombre,
@@ -72,16 +74,22 @@ const crearProducto = async (req, res) => {
     } = req.body;
     // Validaciones
     if (!nombre || String(nombre).trim() === "") {
-      return res.status(400).json({ error: "El nombre es obligatorio" });
+      const error = new Error("El nombre es obligatorio");
+      error.status = 400;
+      return next(error);
     }
 
     if (!categoriaId) {
-      return res.status(400).json({ error: "La categoría es obligatoria" });
+      const error = new Error("La categoría es obligatoria");
+      error.status = 400;
+      return next(error);
     }
     // Busca la categoría
     const categoria = await Categoria.findByPk(categoriaId);
     if (!categoria) {
-      return res.status(404).json({ error: "Categoría no encontrada" });
+      const error = new Error("Categoría no encontrada");
+      error.status = 404;
+      return next(error);
     }
     // Crea el producto y si no hay unidad asignada con ?? se le asigna 0 por defecto
     const producto = await Producto.create({
@@ -97,11 +105,11 @@ const crearProducto = async (req, res) => {
     res.status(201).json({ message: "Producto creado exitosamente", producto });
   } catch (error) {
     console.error("Error al crear producto:", error);
-    res.status(500).json({ error: "Error al crear el producto" });
+    next(error);
   }
 };
 
-const actualizarProducto = async (req, res) => {
+const actualizarProducto = async (req, res, next) => {
   try {
     const { id } = req.params;
     const {
@@ -116,17 +124,23 @@ const actualizarProducto = async (req, res) => {
     // Busca el producto
     const producto = await Producto.findByPk(id);
     if (!producto) {
-      return res.status(404).json({ error: "Producto no encontrado" });
+      const error = new Error("Producto no encontrado");
+      error.status = 404;
+      return next(error);
     }
     // Validaciones
     if (!nombre || String(nombre).trim() === "") {
-      return res.status(400).json({ error: "El nombre es obligatorio" });
+      const error = new Error("El nombre es obligatorio");
+      error.status = 400;
+      return next(error);
     }
 
     if (categoriaId) {
       const categoria = await Categoria.findByPk(categoriaId);
       if (!categoria) {
-        return res.status(404).json({ error: "Categoría no encontrada" });
+        const error = new Error("Categoría no encontrada");
+        error.status = 404;
+        return next(error);
       }
       producto.categoriaId = categoriaId;
     }
@@ -143,11 +157,11 @@ const actualizarProducto = async (req, res) => {
     res.json({ message: "Producto actualizado exitosamente", producto });
   } catch (error) {
     console.error("Error al actualizar producto:", error);
-    res.status(500).json({ error: "Error al actualizar el producto" });
+    next(error);
   }
 };
 
-const eliminarProducto = async (req, res) => {
+const eliminarProducto = async (req, res, next) => {
   const transaction = await sequelize.transaction();
 
   try {
@@ -159,10 +173,9 @@ const eliminarProducto = async (req, res) => {
 
     if (!producto) {
       await transaction.rollback();
-
-      return res.status(404).json({
-        error: "Producto no encontrado",
-      });
+      const error = new Error("Producto no encontrado");
+      error.status = 404;
+      return next(error);
     }
 
     // Eliminar movimientos asociados
@@ -188,9 +201,7 @@ const eliminarProducto = async (req, res) => {
 
     console.error("Error al eliminar producto:", error);
 
-    res.status(500).json({
-      error: "Error al eliminar el producto",
-    });
+    next(error);
   }
 };
 
