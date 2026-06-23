@@ -1,10 +1,16 @@
 "use strict";
 
-const now = new Date();
-
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.bulkDelete("categorias", null, {});
+    const [count] = await queryInterface.sequelize.query(
+      "SELECT COUNT(*) FROM categorias",
+    );
+    if (Number(count[0].count) > 0) {
+      console.log("Seed categorias: ya existen registros, se omite la carga.");
+      return;
+    }
+
+    const now = new Date();
 
     await queryInterface.bulkInsert("categorias", [
       {

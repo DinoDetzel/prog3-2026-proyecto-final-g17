@@ -3,7 +3,7 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('categorias', {
       id: { type: Sequelize.INTEGER, autoIncrement: true, primaryKey: true },
-      nombre: { type: Sequelize.STRING, allowNull: false },
+      nombre: { type: Sequelize.STRING(100), allowNull: false, unique: true },
       descripcion: { type: Sequelize.TEXT },
       createdAt: { type: Sequelize.DATE, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
       updatedAt: { type: Sequelize.DATE, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') }
@@ -11,15 +11,18 @@ module.exports = {
 
     await queryInterface.createTable('productos', {
       id: { type: Sequelize.INTEGER, autoIncrement: true, primaryKey: true },
-      nombre: { type: Sequelize.STRING, allowNull: false },
+      nombre: { type: Sequelize.STRING(150), allowNull: false },
       descripcion: { type: Sequelize.TEXT },
-      precio: { type: Sequelize.DECIMAL(10, 2), allowNull: false },
+      precio: { type: Sequelize.DECIMAL(10, 2), allowNull: false, defaultValue: 0 },
       stock: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 0 },
-      categoria_id: { 
-        type: Sequelize.INTEGER, 
+      stockMinimo: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 0 },
+      categoria_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
         references: { model: 'categorias', key: 'id' },
-        onDelete: 'SET NULL'
+        onDelete: 'RESTRICT'
       },
+      activo: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: true },
       createdAt: { type: Sequelize.DATE, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
       updatedAt: { type: Sequelize.DATE, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') }
     });

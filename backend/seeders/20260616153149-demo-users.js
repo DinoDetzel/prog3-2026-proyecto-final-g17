@@ -1,39 +1,46 @@
-'use strict';
+"use strict";
 
-const bcrypt = require('bcryptjs');
+const bcrypt = require("bcryptjs");
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    const hashedPassword = await bcrypt.hash('123456', 10);
+    const [count] = await queryInterface.sequelize.query(
+      "SELECT COUNT(*) FROM users",
+    );
+    if (Number(count[0].count) > 0) {
+      console.log("Seed users: ya existen registros, se omite la carga.");
+      return;
+    }
 
-    await queryInterface.bulkDelete('users', null, {});
+    const hashedPassword = await bcrypt.hash("123456", 10);
+    const now = new Date();
 
-    await queryInterface.bulkInsert('users', [
+    await queryInterface.bulkInsert("users", [
       {
-        nombre: 'Admin',
-        email: 'admin@test.com',
+        nombre: "Admin",
+        email: "admin@test.com",
         password: hashedPassword,
-        createdAt: new Date(),
-        updatedAt: new Date()
+        createdAt: now,
+        updatedAt: now,
       },
       {
-        nombre: 'Juan Pérez',
-        email: 'juan@test.com',
+        nombre: "Juan Pérez",
+        email: "juan@test.com",
         password: hashedPassword,
-        createdAt: new Date(),
-        updatedAt: new Date()
+        createdAt: now,
+        updatedAt: now,
       },
       {
-        nombre: 'María García',
-        email: 'maria@test.com',
+        nombre: "María García",
+        email: "maria@test.com",
         password: hashedPassword,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }
+        createdAt: now,
+        updatedAt: now,
+      },
     ]);
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.bulkDelete('users', null, {});
-  }
+    await queryInterface.bulkDelete("users", null, {});
+  },
 };

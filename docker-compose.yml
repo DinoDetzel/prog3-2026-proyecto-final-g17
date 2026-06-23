@@ -29,7 +29,6 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.dev
-    command: sh -c "npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all && npm run dev"
     container_name: app_backend
     restart: unless-stopped
     environment:
