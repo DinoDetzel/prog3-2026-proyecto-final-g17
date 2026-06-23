@@ -46,10 +46,10 @@ Todos los servicios corren dentro de contenedores Docker y se comunican a traves
 
 | Servicio | Tecnologia | Puerto | Funcion |
 |----------|------------|--------|---------|
-| **Frontend** | React 18 | 3000 | Interfaz de usuario |
+| **Frontend** | React 18 | 3000 | Interfaz de usuario | (por implementar)
 | **Backend** | Express + Sequelize | 3001 | API REST |
 | **Database** | PostgreSQL 15 | 5432 | Base de datos relacional |
-| **Cache** | Redis 7 | 6379 | Cache y sesiones |
+| **Cache** | Redis 7 | 6379 | Cache y sesiones | (por implementar)
 | **Proxy** | Caddy 2 | 80 | Reverse proxy |
 | **pgAdmin** | pgAdmin 4 | 5050 | Administracion visual de la BD |
 
@@ -69,6 +69,10 @@ docker-compose build
 
 # Iniciar todos los servicios
 docker-compose up
+
+# Cargar migraciones y seeders (solo la primera vez)
+docker-compose exec backend npx sequelize-cli db:migrate
+docker-compose exec backend npx sequelize-cli db:seed:all
 ```
 
 Una vez que todo este corriendo, podes acceder a:
