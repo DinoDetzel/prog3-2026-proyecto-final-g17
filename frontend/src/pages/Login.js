@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import useAuth from '../hooks/useAuth';
+import authService from '../services/authService';
 
-const Login = () => {
+const Login = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     try {
-      await login(email, password);
+      const data = await authService.login(email, password);
+      onLogin(data.user);
       navigate('/perfil');
     } catch (err) {
       setError(err.response?.data?.error || 'Error al iniciar sesion');
@@ -28,23 +28,11 @@ const Login = () => {
         <form onSubmit={handleSubmit}>
           <div style={styles.field}>
             <label>Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              style={styles.input}
-              required
-            />
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.input} required />
           </div>
           <div style={styles.field}>
             <label>Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              style={styles.input}
-              required
-            />
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} style={styles.input} required />
           </div>
           <button type="submit" style={styles.button}>Entrar</button>
         </form>
