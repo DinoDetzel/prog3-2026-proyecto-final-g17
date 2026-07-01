@@ -6,8 +6,13 @@ const useAuth = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(authService.isLoggedIn());
 
   useEffect(() => {
-    setUser(authService.getUser());
-    setIsLoggedIn(authService.isLoggedIn());
+    const actualizarEstado = () => {
+      setUser(authService.getUser());
+      setIsLoggedIn(authService.isLoggedIn());
+    };
+
+    window.addEventListener('storage', actualizarEstado);
+    return () => window.removeEventListener('storage', actualizarEstado);
   }, []);
 
   const login = async (email, password) => {
