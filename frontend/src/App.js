@@ -1,19 +1,28 @@
 import React from 'react';
-import './App.css';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Perfil from './pages/Perfil';
+import authService from './services/authService';
+
+const PrivateRoute = ({ children }) => {
+  return authService.isLoggedIn() ? children : <Navigate to="/login" />;
+};
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>¡Bienvenido a tu nueva aplicación!</h1>
-        <p>Frontend React funcionando correctamente</p>
-        <p>
-          <a href="/api/health" target="_blank" rel="noopener noreferrer">
-            Verificar estado de la API
-          </a>
-        </p>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/perfil" element={
+          <PrivateRoute>
+            <Perfil />
+          </PrivateRoute>
+        } />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
