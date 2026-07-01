@@ -1,19 +1,40 @@
 import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { estaLogueado } from './services/auth';
+import LoginPage from './pages/LoginPage';
+import HomePage from './pages/HomePage';
+import PerfilPage from './pages/PerfilPage';
 import './App.css';
+
+// Ruta protegida: si no está logueado, redirige al login
+function RutaProtegida({ children }) {
+  return estaLogueado() ? children : <Navigate to="/login" replace />;
+}
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>¡Bienvenido a tu nueva aplicación!</h1>
-        <p>Frontend React funcionando correctamente</p>
-        <p>
-          <a href="/api/health" target="_blank" rel="noopener noreferrer">
-            Verificar estado de la API
-          </a>
-        </p>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/"
+          element={
+            <RutaProtegida>
+              <HomePage />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/perfil"
+          element={
+            <RutaProtegida>
+              <PerfilPage />
+            </RutaProtegida>
+          }
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
