@@ -5,13 +5,15 @@ const {
   User,
 } = require("../models");
 
+const incluirRelaciones = [
+  { model: Producto, as: "producto" },
+  { model: User, as: "usuario", attributes: { exclude: ["password"] } },
+];
+
 const listarMovimientos = async (req, res, next) => {
   try {
     const movimientos = await MovimientoInventario.findAll({
-      include: [
-        { model: Producto, as: "producto" },
-        { model: User, as: "usuario" },
-      ],
+      include: incluirRelaciones,
       order: [["createdAt", "DESC"]],
     });
     res.json(movimientos);
@@ -25,10 +27,7 @@ const obtenerMovimiento = async (req, res, next) => {
   try {
     const { id } = req.params;
     const movimiento = await MovimientoInventario.findByPk(id, {
-      include: [
-        { model: Producto, as: "producto" },
-        { model: User, as: "usuario" },
-      ],
+      include: incluirRelaciones,
     });
 
     if (!movimiento) {

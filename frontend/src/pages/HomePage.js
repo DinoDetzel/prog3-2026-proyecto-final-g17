@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Navbar from "../components/layout/Navbar";
+import MovimientosCrud from "../components/MovimientosCrud";
 import {
   getProductos,
   getCategorias,
@@ -329,7 +330,7 @@ export default function HomePage() {
                     })
                   }
                 />
-                <div class="producto-form-row">
+                <div className="producto-form-row">
                   <textarea
                     className="categoria-textarea"
                     placeholder="Descripción"
@@ -402,19 +403,10 @@ export default function HomePage() {
 
       case "movimientos":
         return (
-          <section className="content-panel">
-            <div className="home-header">
-              <h2 className="home-titulo">Movimientos</h2>
-              <span className="home-contador">Historial de inventario</span>
-            </div>
-
-            <div className="empty-state">
-              <p>
-                Aquí aparecerán los movimientos de stock y ajustes de
-                inventario.
-              </p>
-            </div>
-          </section>
+          <MovimientosCrud
+            productos={productos}
+            onDatosActualizados={cargarDatos}
+          />
         );
 
       case "productos":
@@ -442,7 +434,7 @@ export default function HomePage() {
                     setFormProducto({ ...formProducto, nombre: e.target.value })
                   }
                 />
-                <div class="producto-form-row">
+                <div className="producto-form-row">
                   <textarea
                     className="categoria-textarea"
                     placeholder="Descripción"
