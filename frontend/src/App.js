@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { estaLogueado } from "./services/auth";
+import authService from "./services/authService";
 import LoginPage from "./pages/LoginPage";
 import HomePage from "./pages/HomePage";
 import PerfilPage from "./pages/PerfilPage";
