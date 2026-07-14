@@ -1,10 +1,16 @@
-import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Perfil from './pages/Perfil';
-import Navbar from './components/layout/Navbar';
-import authService from './services/authService';
+import React, { useState } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { estaLogueado } from "./services/auth";
+import authService from "./services/authService";
+import LoginPage from "./pages/LoginPage";
+import HomePage from "./pages/HomePage";
+import PerfilPage from "./pages/PerfilPage";
+import "./App.css";
+
+// Ruta protegida: si no está logueado, redirige al login
+function RutaProtegida({ children }) {
+  return estaLogueado() ? children : <Navigate to="/login" replace />;
+}
 
 function App() {
   const [user, setUser] = useState(authService.getUser());
@@ -27,16 +33,25 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Navbar user={user} isLoggedIn={isLoggedIn} onLogout={handleLogout} />
       <Routes>
-        <Route path="/" element={<Navigate to="/login" />} />
-        <Route path="/login" element={<Login onLogin={handleLogin} />} />
-        <Route path="/register" element={<Register onLogin={handleLogin} />} />
-        <Route path="/perfil" element={
-          <PrivateRoute>
-            <Perfil onLogout={handleLogout} />
-          </PrivateRoute>
-        } />
+        <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/"
+          element={
+            <RutaProtegida>
+              <HomePage />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/perfil"
+          element={
+            <RutaProtegida>
+              <PerfilPage />
+            </RutaProtegida>
+          }
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
