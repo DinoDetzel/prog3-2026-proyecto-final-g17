@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { estaLogueado } from "./services/auth";
-import authService from "./services/authService";
 import LoginPage from "./pages/LoginPage";
 import HomePage from "./pages/HomePage";
 import PerfilPage from "./pages/PerfilPage";
@@ -13,24 +12,6 @@ function RutaProtegida({ children }) {
 }
 
 function App() {
-  const [user, setUser] = useState(authService.getUser());
-  const [isLoggedIn, setIsLoggedIn] = useState(authService.isLoggedIn());
-
-  const handleLogin = (userData) => {
-    setUser(userData);
-    setIsLoggedIn(true);
-  };
-
-  const handleLogout = () => {
-    authService.logout();
-    setUser(null);
-    setIsLoggedIn(false);
-  };
-
-  const PrivateRoute = ({ children }) => {
-    return isLoggedIn ? children : <Navigate to="/login" />;
-  };
-
   return (
     <BrowserRouter>
       <Routes>
