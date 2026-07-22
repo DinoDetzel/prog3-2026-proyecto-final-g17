@@ -1,18 +1,6 @@
 const { User } = require('../models');
 const { generarToken } = require('../middleware/auth');
-
-function validarEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-function validarCampos(campos) {
-  for (const [nombre, valor] of Object.entries(campos)) {
-    if (!valor || String(valor).trim() === '') {
-      return `El campo '${nombre}' es obligatorio`;
-    }
-  }
-  return null;
-}
+const { validarEmail, validarCampos } = require('../utils/validaciones');
 
 const register = async (req, res) => {
   try {
